@@ -25,6 +25,7 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
        delimLay->addWidget(new QLabel("Разделитель:"));
        delimEdit = new QLineEdit();
        delimEdit->setPlaceholderText("Символ делителя");
+       delimEdit->setText(delimiter);
        delimLay->addWidget(delimEdit);
        auto *updBtn = new QPushButton("Применить");
        delimLay->addWidget(updBtn);
@@ -77,7 +78,10 @@ void ParceWgt::fillTable()
         const auto &cells = buf.split(delimiter, Qt::KeepEmptyParts);
         if(table->rowCount()-1 < row) table->insertRow(row);
         for(int col = 0; col < cells.size(); ++col){
-            if(table->columnCount()-1 < col) table->insertColumn(col);
+            if(table->columnCount()-1 < col) {
+                header->insertSection(col);
+                table->insertColumn(col);
+            }
             table->setItem(row, col, new QTableWidgetItem(cells.at(col)));
         }
         ++row;

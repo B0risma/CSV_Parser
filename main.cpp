@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     QString inFile;
     {
         QTextStream str(&inFile);
-        str << "Col 1, " << "Col 2, " << "Col 3, " << "Col 4, " << "Col 5, " << '\n';
+        str << "Col 1; " << "Col 2; " << "Col 3; " << "Col 4; " << "Col 5; " << '\n';
         for(int row = 0; row < 10; ++row){
-            for(int col = 0; col < 4; ++col){
-                str << QString::number(col) << ", ";
+            for(int col = 0; col < 5; ++col){
+                str << QString::number(col) << "; ";
             }
             str << '\n';
         }

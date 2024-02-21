@@ -4,8 +4,9 @@
 #include <QLabel>
 #include <QDebug>
 
-ComboHeader::ComboHeader(QWidget *parent) : QHeaderView(Qt::Horizontal, parent)
+ComboHeader::ComboHeader(QWidget *parent) : QHeaderView(Qt::Horizontal, parent), data(new HeaderModel(this))
 {
+    setModel(data);
 }
 
 void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const
@@ -28,17 +29,37 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
 
 
 
-void ComboHeader::setModel(QAbstractItemModel *model)
+
+
+void ComboHeader::setColumnCount(const int colCount)
 {
-    QHeaderView::setModel(model);
+    data->count = colCount;
+    reset();
+}
+
+void ComboHeader::insertSection(const int newColumn)
+{
+    auto *combo = new QComboBox(this);
+    combo->addItem("Игнор");
+    combo->addItems(data->colNames);
+    colWgts.push_back(combo);
+    qDebug() << "inserted" << newColumn;
+    data->count = newColumn+1;
+    QHeaderView::sectionsInserted({}, newColumn, newColumn);
+}
+
+void ComboHeader::setHeaders(const QList<QString> &headers)
+{
+    data->colNames = headers;
+    reset();
+}
+
+void ComboHeader::reset()
+{
+    qDeleteAll(colWgts.begin(), colWgts.end());
     colWgts.clear();
-    QStringList comboItems;
-    for(int col = 0; col < model->columnCount(); ++col){
-        comboItems.push_back(QString::number(col));
+    for(int col = 0; col < data->columnCount(); ++col){
+        insertSection(col);
     }
-    for(int col = 0; col < model->columnCount(); ++col){
-        auto *combo = new QComboBox(this);
-        combo->addItems(comboItems);
-        colWgts.push_back(combo);
-    }
+    QHeaderView::reset();
 }
