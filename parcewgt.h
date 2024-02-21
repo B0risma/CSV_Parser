@@ -24,7 +24,7 @@ private:
     //tableModel
 
     int rowLimit = 4;
-    QChar delimiter = ',';
+    QChar delimiter = ';';
 
     void fillTable();
 

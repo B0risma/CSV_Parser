@@ -11,7 +11,7 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const override{
         if(orientation == Qt::Horizontal && role == Qt::DisplayRole){
-            return colNames.value(section);
+            return "some";
         }
         return {};
     }
@@ -22,11 +22,8 @@ public:
     virtual int rowCount(const QModelIndex &parent) const override {return 0;}
 
     QList<QString> colNames;
-    int count = 5;
+    int count=0;
 };
-
-
-
 
 /*!
  * \brief Заголовок с возможностью выбора заголовка к столбцу из набора

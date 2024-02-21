@@ -69,10 +69,9 @@ void ParceWgt::fillTable()
     table->clear();
     QString text = textView->toPlainText();
     if(text.isEmpty()) return;
-//    table->setRowCount(rowLimit);
     QTextStream str(&text, QIODevice::ReadOnly);
-//    str.readLine();
-    QString buf;
+    QString buf = str.readLine();
+    header->setHeaders(buf.split(delimiter, Qt::KeepEmptyParts));
     for(int row = 0; row < rowLimit || !str.atEnd();){
         buf = str.readLine();
         const auto &cells = buf.split(delimiter, Qt::KeepEmptyParts);

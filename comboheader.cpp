@@ -20,9 +20,10 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
         option.rect = rect;
         wgt->setGeometry(rect);
         style()->drawControl(QStyle::CE_ComboBoxLabel, &option, painter, this);
-
+        qDebug() << "paint wgt" << logicalIndex;
         wgt->render(painter);
     }
+    qDebug() << "paint" << logicalIndex;
     painter->restore();
 }
 
@@ -56,10 +57,13 @@ void ComboHeader::setHeaders(const QList<QString> &headers)
 
 void ComboHeader::reset()
 {
+    QHeaderView::reset();
+    qDebug() << "beginReset";
     qDeleteAll(colWgts.begin(), colWgts.end());
+    auto size = data->columnCount();
     colWgts.clear();
-    for(int col = 0; col < data->columnCount(); ++col){
+    for(int col = 0; col < size; ++col){
         insertSection(col);
     }
-    QHeaderView::reset();
+
 }
