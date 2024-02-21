@@ -16,7 +16,7 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
     auto *vLay = new QVBoxLayout(this);
     {
         textView = new QTextEdit();
-        textView->setReadOnly(true);
+//        textView->setReadOnly(true);
         vLay->addWidget(textView);
     }
     {
@@ -67,14 +67,19 @@ void ParceWgt::onSetDelim()
 void ParceWgt::fillTable()
 {
     table->clear();
+    {
+        while(table->columnCount())
+            table->removeColumn(0);
+        header->setColumnCount(0);
+    }
     QString text = textView->toPlainText();
     if(text.isEmpty()) return;
     QTextStream str(&text, QIODevice::ReadOnly);
     QString buf = str.readLine();
-    header->setHeaders(buf.split(delimiter, Qt::SkipEmptyParts));
+    header->setHeaders(buf.split(delimiter));
     for(int row = 0; row < rowLimit || !str.atEnd();){
         buf = str.readLine();
-        const auto &cells = buf.split(delimiter, Qt::SkipEmptyParts);
+        const auto &cells = buf.split(delimiter);
         if(table->rowCount()-1 < row) table->insertRow(row);
         for(int col = 0; col < cells.size(); ++col){
             if(table->columnCount()-1 < col) {

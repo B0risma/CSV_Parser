@@ -48,6 +48,8 @@ void ComboHeader::insertSection(const int newColumn)
     QHeaderView::sectionsInserted({}, newColumn, newColumn);
 }
 
+
+
 void ComboHeader::setHeaders(const QList<QString> &headers)
 {
     data->colNames = headers;
