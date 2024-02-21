@@ -71,10 +71,10 @@ void ParceWgt::fillTable()
     if(text.isEmpty()) return;
     QTextStream str(&text, QIODevice::ReadOnly);
     QString buf = str.readLine();
-    header->setHeaders(buf.split(delimiter, Qt::KeepEmptyParts));
+    header->setHeaders(buf.split(delimiter, Qt::SkipEmptyParts));
     for(int row = 0; row < rowLimit || !str.atEnd();){
         buf = str.readLine();
-        const auto &cells = buf.split(delimiter, Qt::KeepEmptyParts);
+        const auto &cells = buf.split(delimiter, Qt::SkipEmptyParts);
         if(table->rowCount()-1 < row) table->insertRow(row);
         for(int col = 0; col < cells.size(); ++col){
             if(table->columnCount()-1 < col) {
@@ -85,5 +85,6 @@ void ParceWgt::fillTable()
         }
         ++row;
     }
+    header->reset();
 }
 
