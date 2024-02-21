@@ -20,6 +20,7 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
         option.rect = rect;
         wgt->setGeometry(rect);
         style()->drawControl(QStyle::CE_ComboBoxLabel, &option, painter, this);
+        wgt->show();
         wgt->render(painter);
     }
     painter->restore();
@@ -30,7 +31,7 @@ QComboBox *ComboHeader::createBox()
     auto *combo = new QComboBox(this);
     combo->addItem("Игнор");
     combo->addItems(data->colNames);
-    combo->show();
+    combo->hide();
     return combo;
 }
 
