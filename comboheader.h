@@ -9,12 +9,7 @@ class HeaderModel : public QAbstractTableModel {
 public:
     HeaderModel(QWidget* parent) : QAbstractTableModel(parent){};
     virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const override{
-        if(orientation == Qt::Horizontal && role == Qt::DisplayRole){
-            return "some";
-        }
-        return {};
-    }
+                                int role = Qt::DisplayRole) const override{return {};}
     virtual int columnCount(const QModelIndex &parent = {}) const override{
         return count;
     }
@@ -42,6 +37,7 @@ public slots:
 
 protected:
     virtual void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const override;
+    QComboBox *createBox();
 
 
 private:

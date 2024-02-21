@@ -20,17 +20,19 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
         option.rect = rect;
         wgt->setGeometry(rect);
         style()->drawControl(QStyle::CE_ComboBoxLabel, &option, painter, this);
-        qDebug() << "paint wgt" << logicalIndex;
         wgt->render(painter);
     }
-    qDebug() << "paint" << logicalIndex;
     painter->restore();
 }
 
-
-
-
-
+QComboBox *ComboHeader::createBox()
+{
+    auto *combo = new QComboBox(this);
+    combo->addItem("Игнор");
+    combo->addItems(data->colNames);
+    combo->show();
+    return combo;
+}
 
 void ComboHeader::setColumnCount(const int colCount)
 {
@@ -40,12 +42,8 @@ void ComboHeader::setColumnCount(const int colCount)
 
 void ComboHeader::insertSection(const int newColumn)
 {
-    auto *combo = new QComboBox(this);
-    combo->addItem("Игнор");
-    combo->addItems(data->colNames);
-    colWgts.push_back(combo);
-    qDebug() << "inserted" << newColumn;
-    data->count = newColumn+1;
+    colWgts.insert(newColumn, createBox());
+    data->count += 1;
     QHeaderView::sectionsInserted({}, newColumn, newColumn);
 }
 
@@ -57,13 +55,11 @@ void ComboHeader::setHeaders(const QList<QString> &headers)
 
 void ComboHeader::reset()
 {
-    QHeaderView::reset();
-    qDebug() << "beginReset";
     qDeleteAll(colWgts.begin(), colWgts.end());
-    auto size = data->columnCount();
+    auto size = data->count;
     colWgts.clear();
     for(int col = 0; col < size; ++col){
-        insertSection(col);
+        colWgts.push_back(createBox());
     }
-
+    QHeaderView::reset();
 }
