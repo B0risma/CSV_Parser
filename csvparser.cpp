@@ -4,7 +4,7 @@
 #include <QDebug>
 
 
-QList <QString> CSVparser::parseStr(const QString &str) const{
+QList <QString> CSVparser::parseStr(QStringView str) const{
     QList<QString> splitted = {};
     QString buf = {};
     bool inBraces = false;
@@ -36,18 +36,28 @@ void CSVparser::printCells() const
 }
 
 
-void CSVparser::setText(QString text)
+void CSVparser::setText(QStringView text)
 {
+    clearData();
     if(text.isEmpty()) return;
-    QTextStream str(&text, QIODevice::ReadOnly);
-
-    headers = parseStr(str.readLine());
-    while(!str.atEnd()){
-        cells.push_back(parseStr(str.readLine()));
+    QList<QStringView> lines = text.split(QChar(QChar::SpecialCharacter::LineFeed));
+    headers = parseStr(lines.takeAt(0));
+    while(!lines.isEmpty()){
+        cells.push_back(parseStr(lines.takeAt(0)));
     }
 
 
 }
+
+//void CSVparser::setText(QString &text)
+//{
+//    clearData();
+//    if(text.isEmpty()) return;
+//    QTextStream str(&text, QIODevice::ReadOnly);
+//    headers = parseStr(str.readLine());
+//    while(!str.atEnd())
+//        cells.push_back(parseStr(str.readLine()));
+//}
 
 
 QString smplCSV(QChar delimiter, QPair<QChar, QChar> braces){

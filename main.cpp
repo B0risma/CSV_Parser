@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
     {
        CSVparser pars;
        pars.setParams(',', {'"', '"'});
-       auto file = smplCSV(',',  {'"', '"'});
-       qDebug() << file;
+       const auto file = smplCSV(',',  {'"', '"'});
+       qDebug() << "file" << file;
        pars.setText(file);
        pars.printCells();
     }
@@ -32,5 +32,5 @@ int main(int argc, char *argv[])
 //    ParceWgt csv(0);
 //    csv.show();
 
-    return a.exec();
+    return 0;//a.exec();
 }
