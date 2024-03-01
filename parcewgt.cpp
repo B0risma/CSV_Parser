@@ -92,6 +92,14 @@ void ParceWgt::openFileRequest()
         setFileName(dlg.selectedFiles().first());
 }
 
+QStringList splitLine(const QChar &delimiter, const QString &str){
+    QStringList cells = str.split(delimiter);
+    for(int i = 0; i < str.count(); ++i){
+        QString &cellStr = cells[i];
+        if(true);
+    }
+}
+
 void ParceWgt::fillTable()
 {
     table->clear();
@@ -105,10 +113,12 @@ void ParceWgt::fillTable()
     QTextStream str(&text, QIODevice::ReadOnly);
     QString buf = str.readLine();
     header->setHeaders(buf.split(delimiter));
-    str.resetStatus();
+    str.seek(0);
     for(int row = 0; row < rowLimit || !str.atEnd();){
+
         buf = str.readLine();
-        const auto &cells = buf.split(delimiter);
+        const auto &cells = buf.split(delimiter); //как проверить наличие знака деления внутри строки?
+
         if(table->rowCount()-1 < row) table->insertRow(row);
         for(int col = 0; col < cells.size(); ++col){
             if(table->columnCount()-1 < col) {

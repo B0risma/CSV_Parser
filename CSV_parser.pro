@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     comboheader.cpp \
+    csvparser.cpp \
     main.cpp \
     parcewgt.cpp
 
 HEADERS += \
     comboheader.h \
+    csvparser.h \
     parcewgt.h
 
 # Default rules for deployment.
