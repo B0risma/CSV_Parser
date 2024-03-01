@@ -11,6 +11,7 @@ ComboHeader::ComboHeader(QWidget *parent) : QHeaderView(Qt::Horizontal, parent),
 
 void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const
 {
+    QHeaderView::paintSection(painter, rect, logicalIndex);
     painter->save();
     auto *wgt = colWgts.value(logicalIndex, 0);
     if(wgt){
@@ -18,7 +19,8 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
         initStyleOption(&option);
         option.text = QString();
         option.rect = rect;
-        wgt->setGeometry(rect);
+
+        wgt->setGeometry(rect.marginsRemoved(QMargins(10,0,10,0))); //уменьшение границ ComboBox`a для предотвращения перехвата мыши на границе клетки
         style()->drawControl(QStyle::CE_ComboBoxLabel, &option, painter, this);
         wgt->show();
         wgt->render(painter);
@@ -29,6 +31,7 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
 QComboBox *ComboHeader::createBox()
 {
     auto *combo = new QComboBox(this);
+//    combo->setStyleSheet("QComboBox { border: 0px solid white;}");
     combo->addItem("Игнор");
     combo->addItems(data->colNames);
     combo->hide();
