@@ -15,6 +15,10 @@ public:
                                              setText(textView->toPlainText());
                                              };
     void onSetDelim();
+    void setFileName(const QString &fileName);
+
+public slots:
+    void openFileRequest();
 
 private:
     QTextEdit *textView = 0;

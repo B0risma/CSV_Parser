@@ -10,10 +10,20 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QFile>
+#include <QMenuBar>
 
 ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
 {
+//    setContentsMargins(0,0,0,0);
     auto *vLay = new QVBoxLayout(this);
+    auto *menuBar = new QMenuBar(this);
+    vLay->addWidget(menuBar);
+    {
+        auto *tmpMenu = menuBar->addMenu("Файл...");
+        tmpMenu->addAction("Импорт из файла", this, &ParceWgt::openFileRequest);
+    }
     {
         textView = new QTextEdit();
 //        textView->setReadOnly(true);
@@ -42,6 +52,7 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
 
 void ParceWgt::setText(QString in)
 {
+    textView->clear();
     QTextStream str(&in, QIODevice::ReadOnly);
     for(int row = 0; row < rowLimit;){
         textView->append(str.readLine());
@@ -64,6 +75,23 @@ void ParceWgt::onSetDelim()
 
 }
 
+void ParceWgt::setFileName(const QString &fileName)
+{
+    QFile inFile(fileName);
+    if(!inFile.open(QIODevice::ReadOnly)) return;
+    QTextStream reader(&inFile);
+    setText(reader.readAll());
+    inFile.close();
+}
+
+void ParceWgt::openFileRequest()
+{
+    QFileDialog dlg(0);
+    dlg.setFileMode(QFileDialog::ExistingFile);
+    if(dlg.exec() == QDialog::Accepted && !dlg.selectedFiles().isEmpty())
+        setFileName(dlg.selectedFiles().first());
+}
+
 void ParceWgt::fillTable()
 {
     table->clear();
@@ -77,6 +105,7 @@ void ParceWgt::fillTable()
     QTextStream str(&text, QIODevice::ReadOnly);
     QString buf = str.readLine();
     header->setHeaders(buf.split(delimiter));
+    str.resetStatus();
     for(int row = 0; row < rowLimit || !str.atEnd();){
         buf = str.readLine();
         const auto &cells = buf.split(delimiter);
