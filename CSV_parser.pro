@@ -12,8 +12,7 @@ SOURCES += \
     comboheader.cpp \
     csvparser.cpp \
     main.cpp \
-    parcewgt.cpp \
-    remapheaderwgt.cpp
+    parcewgt.cpp
 
 HEADERS += \
     comboheader.h \

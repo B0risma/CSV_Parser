@@ -69,17 +69,17 @@ ParceWgt::ParceWgt(QWidget *parent) : QDialog(parent)
        delimLay->addStretch();
     }
     {
-//        header = new ComboHeader(this);
-//        table = new QTableView(this);
         parser = new CSVmodel(this);
         parser->setParams(delimiter, {'"', '"'});
-////        table->setHorizontalHeader(header);
-//        table->setModel(parser);;
-//        vLay->addWidget(table);
 
-        wgt = new RemapHeaderWgt(this);
-        vLay->addWidget(wgt);
-        wgt->setModels({parser, new SimpleModel()});
+        headerMap = new ColumnMerge(this);
+        headerMap->setModels(parser, new SimpleModel());
+
+        preView = new QTableView(this);
+        preView->setModel(headerMap);
+        preView->setItemDelegate(new Delegate(preView));
+        vLay->addWidget(preView);
+
     }
     text.reset(new QString());
 
@@ -137,7 +137,6 @@ void ParceWgt::openFileRequest()
 
 void ParceWgt::accept()
 {
-    qDebug() << wgt->headerMap();
     QDialog::accept();
 }
 

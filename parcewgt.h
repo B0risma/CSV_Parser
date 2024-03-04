@@ -51,7 +51,7 @@ private:
 
 };
 
-class RemapHeaderWgt;
+class ColumnMerge;
 
 class ParceWgt : public QDialog
 {
@@ -72,10 +72,12 @@ public slots:
 
 private:
     QTextEdit *textView = 0;
-    RemapHeaderWgt *wgt = 0;
-    //headerTable - виджет для выбора заголовков
+    //!Данные для ассоциации столбцов
+    ColumnMerge *headerMap = 0;
+    QTableView *preView = 0;
     //!Данные после импорта
     CSVmodel *parser = 0;
+    QAbstractTableModel *copyTarget;
 
 
     QLineEdit *delimEdit = 0;
@@ -87,3 +89,16 @@ private:
     void fillTable();
 
 };
+
+//Reference how copy model data
+//QMap<QString, QSet<QString> > RemapHeaderWgt::headerMap()
+//{
+//    int columnCount = model->columnCount();
+//    QMap<QString, QSet<QString>> map;
+//    for(int i = 0; i<columnCount; ++i){
+//        const QString targetHeader = model->data(model->index(0, i), Qt::DisplayRole).toString();
+//        if(targetHeader != "Игнорировать" && !targetHeader.isEmpty())
+//            map[model->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString()].insert(targetHeader);
+//    }
+//    return map;
+//};
