@@ -1,5 +1,6 @@
 #include "parcewgt.h"
 #include "csvparser.h"
+#include "remapheaderwgt.h"
 
 #include <QBoxLayout>
 #include <QTextEdit>
@@ -13,13 +14,34 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QMenuBar>
+#include <QDialogButtonBox>
+
+class SimpleModel : public QAbstractTableModel{
+public:
+    SimpleModel(){}
+    virtual int columnCount(const QModelIndex &parent = {}) const override{
+        return 5;
+    }
+    virtual int rowCount(const QModelIndex &parent = {}) const override{
+       return 0;
+    }
+    virtual QVariant data(const QModelIndex &index, int role) const override
+    {
+        return {};
+    }
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override{
+        if(orientation == Qt::Horizontal && role == Qt::DisplayRole ){
+            return section;
+        }
+        return {};
+    }
+
+};
 
 
 
 
-
-
-ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
+ParceWgt::ParceWgt(QWidget *parent) : QDialog(parent)
 {
     auto *vLay = new QVBoxLayout(this);
     auto *menuBar = new QMenuBar(this);
@@ -48,14 +70,25 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
     }
     {
 //        header = new ComboHeader(this);
-        table = new QTableView(this);
+//        table = new QTableView(this);
         parser = new CSVmodel(this);
         parser->setParams(delimiter, {'"', '"'});
-//        table->setHorizontalHeader(header);
-        table->setModel(parser);;
-        vLay->addWidget(table);
+////        table->setHorizontalHeader(header);
+//        table->setModel(parser);;
+//        vLay->addWidget(table);
+
+        wgt = new RemapHeaderWgt(this);
+        vLay->addWidget(wgt);
+        wgt->setModels({parser, new SimpleModel()});
     }
     text.reset(new QString());
+
+    auto *btnBox = new QDialogButtonBox(QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Ok, this);
+    vLay->addWidget(btnBox);
+    connect(btnBox, &QDialogButtonBox::accepted, this, &ParceWgt::accept);
+    connect(btnBox, &QDialogButtonBox::rejected, this, &ParceWgt::reject);
+
+
 }
 
 void ParceWgt::setText(QString in)
@@ -100,6 +133,12 @@ void ParceWgt::openFileRequest()
     dlg.setFileMode(QFileDialog::ExistingFile);
     if(dlg.exec() == QDialog::Accepted && !dlg.selectedFiles().isEmpty())
         setFileName(dlg.selectedFiles().first());
+}
+
+void ParceWgt::accept()
+{
+    qDebug() << wgt->headerMap();
+    QDialog::accept();
 }
 
 //QStringList splitLine(const QChar &delimiter, const QString &str){

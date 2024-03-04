@@ -12,12 +12,14 @@ SOURCES += \
     comboheader.cpp \
     csvparser.cpp \
     main.cpp \
-    parcewgt.cpp
+    parcewgt.cpp \
+    remapheaderwgt.cpp
 
 HEADERS += \
     comboheader.h \
     csvparser.h \
-    parcewgt.h
+    parcewgt.h \
+    remapheaderwgt.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

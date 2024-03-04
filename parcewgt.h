@@ -1,12 +1,12 @@
 #pragma once
 
-#include "comboheader.h"
 #include "csvparser.h"
 
 #include <QWidget>
 #include <QTextEdit>
 #include <QTableWidget>
 #include <QPointer>
+#include <QDialog>
 
 class CSVmodel : public QAbstractTableModel, public CSVparser{
     Q_OBJECT
@@ -39,8 +39,9 @@ public:
 
     }
     virtual void setText(QStringView text) override{
+        beginResetModel();
         CSVparser::setText(text);
-        emit layoutChanged();
+        endResetModel();
     }
 
     void setRowLimit(int limit){rowLimit = limit;}
@@ -50,27 +51,33 @@ private:
 
 };
 
-class ParceWgt : public QWidget
+class RemapHeaderWgt;
+
+class ParceWgt : public QDialog
 {
     Q_OBJECT
 public:
     ParceWgt(QWidget *parent);
     void setText(QString in);
-    inline void setRowLimit(const int rowLim){ rowLimit = rowLim;
-                                             setText(textView->toPlainText());
-                                             };
+    inline void setRowLimit(const int rowLim){
+        rowLimit = rowLim;
+        setText(textView->toPlainText());
+    };
     void onSetDelim();
     void setFileName(const QString &fileName);
 
 public slots:
     void openFileRequest();
+    virtual void accept() override;
 
 private:
     QTextEdit *textView = 0;
-//    QTableWidget *table = 0;
-    QTableView *table = 0;
+    RemapHeaderWgt *wgt = 0;
+    //headerTable - виджет для выбора заголовков
+    //!Данные после импорта
     CSVmodel *parser = 0;
-//    ComboHeader *header = 0;
+
+
     QLineEdit *delimEdit = 0;
 
     int rowLimit = 4;
