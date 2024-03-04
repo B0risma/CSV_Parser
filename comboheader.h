@@ -6,6 +6,7 @@
  * \brief Данные для заголовка
  */
 class HeaderModel : public QAbstractTableModel {
+    Q_OBJECT
 public:
     HeaderModel(QWidget* parent) : QAbstractTableModel(parent){};
     virtual QVariant headerData(int section, Qt::Orientation orientation,
@@ -20,12 +21,6 @@ public:
     int count=0;
 };
 
-/*!
- * \todo
- * Не рисовать лишние вкладки
- * Наложение происходит именно из-за отрисовки вкладок, которые вне зоны видимости
- */
-
 
 /*!
  * \brief Заголовок с возможностью выбора заголовка к столбцу из набора
@@ -38,6 +33,11 @@ public:
     void setHeaders(const QList<QString> &headers);
     void setColumnCount(const int colCount);
     void insertSection(const int newColumn);
+    //!Заглушка для игнорирования модели таблицы
+    virtual void setModel(QAbstractItemModel *model) override {
+        Q_UNUSED(model)
+        QHeaderView::setModel(data);
+    }
 
 public slots:
     virtual void reset() override;

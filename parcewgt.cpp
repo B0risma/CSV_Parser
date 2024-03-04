@@ -1,5 +1,5 @@
 #include "parcewgt.h"
-
+#include "csvparser.h"
 
 #include <QBoxLayout>
 #include <QTextEdit>
@@ -14,9 +14,13 @@
 #include <QFile>
 #include <QMenuBar>
 
+
+
+
+
+
 ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
 {
-//    setContentsMargins(0,0,0,0);
     auto *vLay = new QVBoxLayout(this);
     auto *menuBar = new QMenuBar(this);
     vLay->addWidget(menuBar);
@@ -26,7 +30,7 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
     }
     {
         textView = new QTextEdit();
-//        textView->setReadOnly(true);
+        textView->setReadOnly(true);
         vLay->addWidget(textView);
     }
     {
@@ -43,11 +47,15 @@ ParceWgt::ParceWgt(QWidget *parent) : QWidget(parent)
        delimLay->addStretch();
     }
     {
-        header = new ComboHeader(this);
-        table = new QTableWidget(this);
-        table->setHorizontalHeader(header);
+//        header = new ComboHeader(this);
+        table = new QTableView(this);
+        parser = new CSVmodel(this);
+        parser->setParams(delimiter, {'"', '"'});
+//        table->setHorizontalHeader(header);
+        table->setModel(parser);;
         vLay->addWidget(table);
     }
+    text.reset(new QString());
 }
 
 void ParceWgt::setText(QString in)
@@ -59,6 +67,7 @@ void ParceWgt::setText(QString in)
         if(str.atEnd()) break;
         ++row;
     }
+    *text = in;
     fillTable();
 
 }
@@ -71,6 +80,7 @@ void ParceWgt::onSetDelim()
         return;
     }
     delimiter = filtered.front();
+    parser->setParams(delimiter, {'"', '"'});
     fillTable();
 
 }
@@ -92,43 +102,20 @@ void ParceWgt::openFileRequest()
         setFileName(dlg.selectedFiles().first());
 }
 
-QStringList splitLine(const QChar &delimiter, const QString &str){
-    QStringList cells = str.split(delimiter);
-    for(int i = 0; i < str.count(); ++i){
-        QString &cellStr = cells[i];
-        if(true);
-    }
-}
+//QStringList splitLine(const QChar &delimiter, const QString &str){
+//    QStringList cells = str.split(delimiter);
+//    for(int i = 0; i < str.count(); ++i){
+//        QString &cellStr = cells[i];
+//        if(true);
+//    }
+//}
 
 void ParceWgt::fillTable()
 {
-    table->clear();
-    {
-        while(table->columnCount())
-            table->removeColumn(0);
-        header->setColumnCount(0);
-    }
-    QString text = textView->toPlainText();
-    if(text.isEmpty()) return;
-    QTextStream str(&text, QIODevice::ReadOnly);
-    QString buf = str.readLine();
-    header->setHeaders(buf.split(delimiter));
-    str.seek(0);
-    for(int row = 0; row < rowLimit || !str.atEnd();){
-
-        buf = str.readLine();
-        const auto &cells = buf.split(delimiter); //как проверить наличие знака деления внутри строки?
-
-        if(table->rowCount()-1 < row) table->insertRow(row);
-        for(int col = 0; col < cells.size(); ++col){
-            if(table->columnCount()-1 < col) {
-                header->insertSection(col);
-                table->insertColumn(col);
-            }
-            table->setItem(row, col, new QTableWidgetItem(cells.at(col)));
-        }
-        ++row;
-    }
-    header->reset();
+    parser->setText(*text);
+//    header->setHeaders(parser->allHeaders());
+//    header->setColumnCount(parser->columnCount());
 }
+
+
 

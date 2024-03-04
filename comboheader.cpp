@@ -31,7 +31,6 @@ void ComboHeader::paintSection(QPainter *painter, const QRect &rect, int logical
 QComboBox *ComboHeader::createBox()
 {
     auto *combo = new QComboBox(this);
-//    combo->setStyleSheet("QComboBox { border: 0px solid white;}");
     combo->addItem("Игнор");
     combo->addItems(data->colNames);
     combo->hide();
@@ -50,7 +49,6 @@ void ComboHeader::insertSection(const int newColumn)
     data->count += 1;
     QHeaderView::sectionsInserted({}, newColumn, newColumn);
 }
-
 
 
 void ComboHeader::setHeaders(const QList<QString> &headers)
