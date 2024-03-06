@@ -16,32 +16,7 @@
 #include <QMenuBar>
 #include <QDialogButtonBox>
 
-class SimpleModel : public QAbstractTableModel{
-public:
-    SimpleModel(){}
-    virtual int columnCount(const QModelIndex &parent = {}) const override{
-        return 5;
-    }
-    virtual int rowCount(const QModelIndex &parent = {}) const override{
-       return 0;
-    }
-    virtual QVariant data(const QModelIndex &index, int role) const override
-    {
-        return {};
-    }
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override{
-        if(orientation == Qt::Horizontal && role == Qt::DisplayRole ){
-            return section;
-        }
-        return {};
-    }
-
-};
-
-
-
-
-ParceWgt::ParceWgt(QWidget *parent) : QDialog(parent)
+ParceWgt::ParceWgt(QWidget *parent, QAbstractTableModel *targetModel) : QDialog(parent)
 {
     auto *vLay = new QVBoxLayout(this);
     auto *menuBar = new QMenuBar(this);
@@ -73,7 +48,8 @@ ParceWgt::ParceWgt(QWidget *parent) : QDialog(parent)
         parser->setParams(delimiter, {'"', '"'});
 
         headerMap = new ColumnMerge(this);
-        headerMap->setModels(parser, new SimpleModel());
+        copyTarget = targetModel;
+        headerMap->setModels(parser, copyTarget);
 
         preView = new QTableView(this);
         preView->setModel(headerMap);
@@ -127,6 +103,32 @@ void ParceWgt::setFileName(const QString &fileName)
     inFile.close();
 }
 
+int ParceWgt::copyToTarget()
+{
+    const int rowCount = copyTarget->rowCount();
+    copyTarget->removeRows(0, rowCount);
+    copyTarget->insertRows(0, parser->dataCount());
+    parser->setRowLimit(0);
+    for(int row = 0; row < copyTarget->rowCount(); ++row){
+//        copyTarget->insertRow(row); //Разметить сразу на все строки
+        for(int col = 0; col < copyTarget->columnCount(); ++col){
+            const auto index = copyTarget->index(row, col);
+            if(!index.isValid()) qDebug() << "invalid targetIdx";
+            const QString &header = copyTarget->headerData(col, Qt::Horizontal).toString();
+            QString mergeData;
+            for(int sect : headerMap->sourceHeaders(header)){
+                auto srcInd = parser->index(row, sect);
+                if(!srcInd.isValid()) qDebug() << "invalid srcIndex";
+                mergeData.append(parser->data(srcInd, CSVmodel::RawData).toString());
+            }
+            if(!copyTarget->setData(index, mergeData))
+                qDebug() << "failed set at row " << row;
+        }
+    }
+    qDebug() << "copied new rows:" << copyTarget->rowCount();
+    return 0;
+}
+
 void ParceWgt::openFileRequest()
 {
     QFileDialog dlg(0);
@@ -137,7 +139,8 @@ void ParceWgt::openFileRequest()
 
 void ParceWgt::accept()
 {
-    QDialog::accept();
+    copyToTarget();
+//    QDialog::accept();
 }
 
 //QStringList splitLine(const QChar &delimiter, const QString &str){

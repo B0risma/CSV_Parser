@@ -1,6 +1,9 @@
 #include "parcewgt.h"
 #include "comboheader.h"
 #include "csvparser.h"
+#include "simplemodel.h"
+
+#include "../NSI/personsmodel.h"
 
 
 #include <QApplication>
@@ -40,7 +43,11 @@ int main(int argc, char *argv[])
 
 
 //QMainWindow mainWnd;
-    ParceWgt csv(0);
+    auto *persons = new NSI::PersonsModel(0);
+    ParceWgt csv(0, persons);
+    QTableView *view = new QTableView(0);
+    view->setModel(persons);
+    view->show();
     csv.show();
     a.exec();
     return 0;

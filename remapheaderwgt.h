@@ -72,6 +72,10 @@ public:
         }
         return {};
     }
+
+    QList<int> sourceHeaders(const QString &targetHeader){
+        return headerMap.keys(targetHeader);
+    }
 private:
     QAbstractTableModel *sourceModel = 0;
     QSet<QString> _targetHeaders = {"Игнорировать"};

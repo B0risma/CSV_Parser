@@ -11,6 +11,9 @@
 class CSVmodel : public QAbstractTableModel, public CSVparser{
     Q_OBJECT
 public:
+    enum Roles{
+      RawData = Qt::UserRole+1
+    };
     CSVmodel(QObject *parent = 0) : QAbstractTableModel(parent){}
     virtual ~CSVmodel() = default;
     virtual int rowCount(const QModelIndex &parent = {}) const override{
@@ -18,14 +21,15 @@ public:
             return rowLimit;
         return CSVparser::rowCount();
     }
+    int dataCount() const {return CSVparser::rowCount();}
     virtual int columnCount(const QModelIndex &parent = {}) const override{
         return CSVparser::columnCount();
     }
     virtual QVariant data(const QModelIndex &index, int role) const override
     {
-        if(!index.isValid()) return {};
+        if(!index.isValid() && role == Qt::DisplayRole) return {};
 
-        if(role == Qt::DisplayRole){
+        if(role == Qt::DisplayRole || role == RawData){
             return CSVparser::data(index.row(), index.column()).toString();
         }
         return {};
@@ -57,7 +61,7 @@ class ParceWgt : public QDialog
 {
     Q_OBJECT
 public:
-    ParceWgt(QWidget *parent);
+    ParceWgt(QWidget *parent, QAbstractTableModel *targetModel = 0);
     void setText(QString in);
     inline void setRowLimit(const int rowLim){
         rowLimit = rowLim;
@@ -65,6 +69,15 @@ public:
     };
     void onSetDelim();
     void setFileName(const QString &fileName);
+
+
+    const CSVparser *parsedData() const {
+        return dynamic_cast<CSVparser *>(parser);
+    }
+    const ColumnMerge *headers() const {
+        return headerMap;
+    }
+    int copyToTarget();
 
 public slots:
     void openFileRequest();
